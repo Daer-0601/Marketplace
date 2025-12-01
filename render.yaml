@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: marketplace
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    envVars:
+      - key: SUPABASE_URL
+        value: https://riifvjrfcynrtbkfeoyq.supabase.co
+      - key: SUPABASE_KEY
+        value: sb_publishable_dZ0Bjel-A_5rGmeNwJNc-A_8Qqx7loQ
+    healthCheckPath: /
