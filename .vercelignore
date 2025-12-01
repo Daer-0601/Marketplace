@@ -9,7 +9,6 @@ test/
 .gitignore
 *.md
 *.bat
-*.sh
 .vscode/
 .idea/
 build/

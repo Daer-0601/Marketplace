@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "buildCommand": "chmod +x install-flutter.sh && ./install-flutter.sh",
+  "buildCommand": "bash install-flutter.sh",
   "outputDirectory": "build/web",
   "installCommand": "echo 'Flutter se instalará durante el build'",
   "framework": null,
