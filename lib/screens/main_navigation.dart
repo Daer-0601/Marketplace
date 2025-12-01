@@ -49,7 +49,7 @@ class _MainNavigationState extends State<MainNavigation> {
         ],
       ),
       floatingActionButton: isVendedor && _currentIndex == 0
-          ? FloatingActionButton(
+          ? FloatingActionButton.extended(
               onPressed: () {
                 Navigator.of(context).push(
                   MaterialPageRoute(
@@ -57,12 +57,16 @@ class _MainNavigationState extends State<MainNavigation> {
                   ),
                 );
               },
-              child: const Icon(Icons.add),
+              icon: const Icon(Icons.add_circle_outline),
+              label: const Text('Nuevo Producto'),
+              backgroundColor: const Color(0xFF4CAF50),
+              foregroundColor: Colors.white,
             )
           : null,
     );
   }
 }
+
 
 
 

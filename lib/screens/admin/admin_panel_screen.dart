@@ -47,8 +47,17 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> {
               children: [
                 // Estadísticas
                 Container(
-                  padding: const EdgeInsets.all(16),
-                  color: Colors.deepPurple.withOpacity(0.1),
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [
+                        const Color(0xFF2E7D32).withOpacity(0.1),
+                        const Color(0xFF4CAF50).withOpacity(0.1),
+                      ],
+                    ),
+                  ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
@@ -64,7 +73,7 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> {
                             .length
                             .toString(),
                         Icons.check_circle,
-                        Colors.green,
+                        const Color(0xFF2E7D32),
                       ),
                       _buildStatItem(
                         'Inactivos',
@@ -73,7 +82,7 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> {
                             .length
                             .toString(),
                         Icons.cancel,
-                        Colors.red,
+                        Colors.red[700]!,
                       ),
                     ],
                   ),
@@ -92,6 +101,10 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> {
                               margin: const EdgeInsets.symmetric(
                                 horizontal: 16,
                                 vertical: 8,
+                              ),
+                              elevation: 2,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
                               ),
                               child: ListTile(
                                 leading: product.images.isNotEmpty
@@ -191,23 +204,50 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> {
 
   Widget _buildStatItem(String label, String value, IconData icon,
       [Color? color]) {
-    return Column(
-      children: [
-        Icon(icon, color: color ?? Colors.deepPurple, size: 32),
-        const SizedBox(height: 4),
-        Text(
-          value,
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-            color: color ?? Colors.deepPurple,
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 5),
           ),
-        ),
-        Text(
-          label,
-          style: const TextStyle(fontSize: 12, color: Colors.grey),
-        ),
-      ],
+        ],
+      ),
+      child: Column(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: (color ?? const Color(0xFF2E7D32)).withOpacity(0.1),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(icon, color: color ?? const Color(0xFF2E7D32), size: 28),
+          ),
+          const SizedBox(height: 12),
+          Text(
+            value,
+            style: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              color: color ?? const Color(0xFF2E7D32),
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            label,
+            style: const TextStyle(
+              fontSize: 11,
+              color: Colors.grey,
+              fontWeight: FontWeight.w500,
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
     );
   }
 }

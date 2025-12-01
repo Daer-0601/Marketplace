@@ -87,14 +87,29 @@ class ProductService {
   // Obtener producto por ID
   Future<ProductModel> getProductById(String id) async {
     try {
+      // Validar que el ID no esté vacío
+      if (id.isEmpty || id.trim().isEmpty) {
+        throw Exception('El ID del producto no puede estar vacío');
+      }
+
+      // Limpiar el ID (eliminar espacios en blanco)
+      final cleanId = id.trim();
+
       final response = await _supabase
           .from('products')
           .select()
-          .eq('id', id)
+          .eq('id', cleanId)
           .single();
+
+      if (response == null) {
+        throw Exception('Producto no encontrado con ID: $cleanId');
+      }
 
       return ProductModel.fromJson(response);
     } catch (e) {
+      if (e.toString().contains('PGRST116')) {
+        throw Exception('Producto no encontrado');
+      }
       throw Exception('Error al obtener producto: ${e.toString()}');
     }
   }

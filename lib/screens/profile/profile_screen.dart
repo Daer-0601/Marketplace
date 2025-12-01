@@ -50,21 +50,37 @@ class ProfileScreen extends StatelessWidget {
             Center(
               child: Column(
                 children: [
-                  CircleAvatar(
-                    radius: 50,
-                    backgroundColor: Colors.deepPurple,
-                    backgroundImage: user.profileImage != null
-                        ? NetworkImage(user.profileImage!)
-                        : null,
-                    child: user.profileImage == null
-                        ? Text(
-                            user.fullName?.substring(0, 1).toUpperCase() ?? 'U',
-                            style: const TextStyle(
-                              fontSize: 32,
-                              color: Colors.white,
-                            ),
-                          )
-                        : null,
+                  Container(
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      gradient: const LinearGradient(
+                        colors: [Color(0xFF2E7D32), Color(0xFF4CAF50)],
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: const Color(0xFF2E7D32).withOpacity(0.3),
+                          blurRadius: 20,
+                          offset: const Offset(0, 10),
+                        ),
+                      ],
+                    ),
+                    child: CircleAvatar(
+                      radius: 50,
+                      backgroundColor: Colors.transparent,
+                      backgroundImage: user.profileImage != null
+                          ? NetworkImage(user.profileImage!)
+                          : null,
+                      child: user.profileImage == null
+                          ? Text(
+                              user.fullName?.substring(0, 1).toUpperCase() ?? 'U',
+                              style: const TextStyle(
+                                fontSize: 32,
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            )
+                          : null,
+                    ),
                   ),
                   const SizedBox(height: 16),
                   Text(
@@ -82,15 +98,20 @@ class ProfileScreen extends StatelessWidget {
                     ),
                     decoration: BoxDecoration(
                       color: isVendedor
-                          ? Colors.green.withOpacity(0.1)
-                          : Colors.blue.withOpacity(0.1),
+                          ? const Color(0xFF2E7D32).withOpacity(0.1)
+                          : const Color(0xFF4CAF50).withOpacity(0.1),
                       borderRadius: BorderRadius.circular(20),
+                      border: Border.all(
+                        color: isVendedor ? const Color(0xFF2E7D32) : const Color(0xFF4CAF50),
+                        width: 1.5,
+                      ),
                     ),
                     child: Text(
                       isVendedor ? 'Vendedor' : 'Comprador',
                       style: TextStyle(
-                        color: isVendedor ? Colors.green : Colors.blue,
+                        color: isVendedor ? const Color(0xFF2E7D32) : const Color(0xFF4CAF50),
                         fontWeight: FontWeight.bold,
+                        fontSize: 14,
                       ),
                     ),
                   ),
@@ -254,12 +275,25 @@ class ProfileScreen extends StatelessWidget {
   }
 
   Widget _buildInfoRow(IconData icon, String label, String value) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.grey[200]!),
+      ),
       child: Row(
         children: [
-          Icon(icon, color: Colors.deepPurple),
-          const SizedBox(width: 12),
+          Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: const Color(0xFF2E7D32).withOpacity(0.1),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Icon(icon, color: const Color(0xFF2E7D32), size: 24),
+          ),
+          const SizedBox(width: 16),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -269,13 +303,16 @@ class ProfileScreen extends StatelessWidget {
                   style: const TextStyle(
                     fontSize: 12,
                     color: Colors.grey,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
+                const SizedBox(height: 4),
                 Text(
                   value,
                   style: const TextStyle(
                     fontSize: 16,
-                    fontWeight: FontWeight.w500,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF1B5E20),
                   ),
                 ),
               ],
@@ -289,25 +326,51 @@ class ProfileScreen extends StatelessWidget {
   Widget _buildStatCard(String label, String value, IconData icon) {
     return Expanded(
       child: Card(
-        child: Padding(
+        elevation: 2,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Container(
           padding: const EdgeInsets.all(16.0),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(16),
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                const Color(0xFF4CAF50).withOpacity(0.1),
+                Colors.white,
+              ],
+            ),
+          ),
           child: Column(
             children: [
-              Icon(icon, color: Colors.deepPurple, size: 32),
-              const SizedBox(height: 8),
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF2E7D32).withOpacity(0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(icon, color: const Color(0xFF2E7D32), size: 28),
+              ),
+              const SizedBox(height: 12),
               Text(
                 value,
                 style: const TextStyle(
-                  fontSize: 24,
+                  fontSize: 28,
                   fontWeight: FontWeight.bold,
+                  color: Color(0xFF2E7D32),
                 ),
               ),
+              const SizedBox(height: 4),
               Text(
                 label,
                 style: const TextStyle(
                   fontSize: 12,
                   color: Colors.grey,
+                  fontWeight: FontWeight.w500,
                 ),
+                textAlign: TextAlign.center,
               ),
             ],
           ),
@@ -323,14 +386,38 @@ class ProfileScreen extends StatelessWidget {
     required VoidCallback onTap,
     Color? textColor,
   }) {
-    return ListTile(
-      leading: Icon(icon, color: textColor ?? Colors.deepPurple),
-      title: Text(
-        title,
-        style: TextStyle(color: textColor),
+    return Container(
+      margin: const EdgeInsets.only(bottom: 8),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.grey[200]!),
       ),
-      trailing: const Icon(Icons.chevron_right),
-      onTap: onTap,
+      child: ListTile(
+        leading: Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: (textColor ?? const Color(0xFF2E7D32)).withOpacity(0.1),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Icon(icon, color: textColor ?? const Color(0xFF2E7D32), size: 24),
+        ),
+        title: Text(
+          title,
+          style: TextStyle(
+            color: textColor ?? const Color(0xFF1B5E20),
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        trailing: Icon(
+          Icons.chevron_right,
+          color: textColor ?? const Color(0xFF2E7D32),
+        ),
+        onTap: onTap,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+      ),
     );
   }
 }

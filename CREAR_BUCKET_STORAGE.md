@@ -118,3 +118,4 @@ VALUES ('product-images', 'product-images', true);
 
 ¡Con estos pasos deberías poder subir imágenes correctamente! 🎉
 
+

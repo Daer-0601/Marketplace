@@ -81,9 +81,13 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
   Future<void> _submitForm() async {
     if (!_formKey.currentState!.validate()) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Por favor completa todos los campos correctamente'),
-          backgroundColor: Colors.orange,
+        SnackBar(
+          content: const Text('Por favor completa todos los campos correctamente'),
+          backgroundColor: Colors.orange[700],
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
         ),
       );
       return;
@@ -212,10 +216,14 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
         if (success) {
           Navigator.of(context).pop();
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(_isEditMode ? 'Producto actualizado exitosamente' : 'Producto creado exitosamente'),
-              backgroundColor: Colors.green,
+          SnackBar(
+            content: Text(_isEditMode ? 'Producto actualizado exitosamente' : 'Producto creado exitosamente'),
+            backgroundColor: const Color(0xFF2E7D32),
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
             ),
+          ),
           );
         } else {
           // Mostrar error del provider
@@ -344,9 +352,26 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
                 ],
               ),
               const SizedBox(height: 24),
-              const Text(
-                'Imágenes',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF4CAF50).withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: const Row(
+                  children: [
+                    Icon(Icons.image, color: Color(0xFF2E7D32)),
+                    SizedBox(width: 12),
+                    Text(
+                      'Imágenes del Producto',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFF1B5E20),
+                      ),
+                    ),
+                  ],
+                ),
               ),
               const SizedBox(height: 8),
               if (_existingImageUrls.isNotEmpty)
@@ -439,23 +464,50 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
                     },
                   ),
                 ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 12),
               OutlinedButton.icon(
                 onPressed: _pickImages,
-                icon: const Icon(Icons.add_photo_alternate),
-                label: const Text('Agregar imágenes'),
+                icon: const Icon(Icons.add_photo_alternate, color: Color(0xFF2E7D32)),
+                label: const Text(
+                  'Agregar imágenes',
+                  style: TextStyle(color: Color(0xFF2E7D32), fontWeight: FontWeight.bold),
+                ),
+                style: OutlinedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  side: const BorderSide(color: Color(0xFF2E7D32), width: 2),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
               ),
               const SizedBox(height: 24),
               ElevatedButton(
                 onPressed: productProvider.isLoading ? null : _submitForm,
                 style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  backgroundColor: Colors.deepPurple,
+                  padding: const EdgeInsets.symmetric(vertical: 18),
+                  backgroundColor: const Color(0xFF2E7D32),
                   foregroundColor: Colors.white,
+                  elevation: 4,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
                 child: productProvider.isLoading
-                    ? const CircularProgressIndicator(color: Colors.white)
-                    : Text(_isEditMode ? 'Actualizar' : 'Crear'),
+                    ? const SizedBox(
+                        height: 20,
+                        width: 20,
+                        child: CircularProgressIndicator(
+                          color: Colors.white,
+                          strokeWidth: 2,
+                        ),
+                      )
+                    : Text(
+                        _isEditMode ? 'Actualizar Producto' : 'Crear Producto',
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
               ),
             ],
           ),
