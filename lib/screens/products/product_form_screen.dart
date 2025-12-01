@@ -79,77 +79,165 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
   }
 
   Future<void> _submitForm() async {
-    if (!_formKey.currentState!.validate()) return;
+    if (!_formKey.currentState!.validate()) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Por favor completa todos los campos correctamente'),
+          backgroundColor: Colors.orange,
+        ),
+      );
+      return;
+    }
 
     final productProvider = Provider.of<ProductProvider>(context, listen: false);
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
 
     if (authProvider.currentUser == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Debes estar autenticado')),
+        const SnackBar(
+          content: Text('Debes estar autenticado'),
+          backgroundColor: Colors.red,
+        ),
       );
       return;
     }
 
-    // Combinar imágenes existentes con las nuevas
-    List<String> imageUrls = List.from(_existingImageUrls);
+    // Mostrar indicador de carga
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Row(
+            children: [
+              SizedBox(
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+              ),
+              SizedBox(width: 16),
+              Text('Guardando producto...'),
+            ],
+          ),
+          duration: Duration(seconds: 30),
+        ),
+      );
+    }
 
-    // Subir nuevas imágenes a Supabase Storage
-    if (_selectedImages.isNotEmpty) {
-      // Si es modo edición, usar el ID existente, si no, generar uno temporal
-      final tempProductId = widget.productId ?? 
-          DateTime.now().millisecondsSinceEpoch.toString();
+    try {
+      // Combinar imágenes existentes con las nuevas
+      List<String> imageUrls = List.from(_existingImageUrls);
+
+      // Subir nuevas imágenes a Supabase Storage
+      if (_selectedImages.isNotEmpty) {
+        // Si es modo edición, usar el ID existente, si no, generar uno temporal
+        final tempProductId = widget.productId ?? 
+            DateTime.now().millisecondsSinceEpoch.toString();
+        
+        for (var imageFile in _selectedImages) {
+          try {
+            // Usar el nuevo método que acepta XFile directamente
+            final url = await productProvider.uploadImageFromXFile(
+              imageFile,
+              tempProductId,
+            );
+            imageUrls.add(url);
+          } catch (e) {
+            if (mounted) {
+              ScaffoldMessenger.of(context).hideCurrentSnackBar();
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('Error al subir imagen: ${e.toString()}'),
+                  backgroundColor: Colors.red,
+                  duration: const Duration(seconds: 5),
+                ),
+              );
+            }
+            return; // Salir si hay error al subir imagen
+          }
+        }
+      }
+
+      bool success = false;
       
-      for (var imageFile in _selectedImages) {
-        try {
-          final url = await productProvider.uploadImage(
-            imageFile.path,
-            tempProductId,
-          );
-          imageUrls.add(url);
-        } catch (e) {
+      if (_isEditMode) {
+        final priceValue = double.tryParse(_priceController.text.trim());
+        if (priceValue == null) {
           if (mounted) {
+            ScaffoldMessenger.of(context).hideCurrentSnackBar();
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text('Error al subir imagen: ${e.toString()}'),
+              const SnackBar(
+                content: Text('Por favor ingresa un precio válido'),
                 backgroundColor: Colors.red,
               ),
             );
           }
+          return;
         }
-      }
-    }
 
-    if (_isEditMode) {
-      final success = await productProvider.updateProduct(
-        id: widget.productId!,
-        title: _titleController.text.trim(),
-        description: _descriptionController.text.trim(),
-        price: double.tryParse(_priceController.text.trim()),
-        category: _selectedCategory,
-        images: imageUrls,
-      );
+        success = await productProvider.updateProduct(
+          id: widget.productId!,
+          title: _titleController.text.trim(),
+          description: _descriptionController.text.trim(),
+          price: priceValue,
+          category: _selectedCategory,
+          images: imageUrls,
+        );
+      } else {
+        final priceValue = double.tryParse(_priceController.text.trim());
+        if (priceValue == null) {
+          if (mounted) {
+            ScaffoldMessenger.of(context).hideCurrentSnackBar();
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Por favor ingresa un precio válido'),
+                backgroundColor: Colors.red,
+              ),
+            );
+          }
+          return;
+        }
 
-      if (success && mounted) {
-        Navigator.of(context).pop();
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Producto actualizado')),
+        success = await productProvider.createProduct(
+          title: _titleController.text.trim(),
+          description: _descriptionController.text.trim(),
+          price: priceValue,
+          category: _selectedCategory,
+          imageUrls: imageUrls,
+          sellerId: authProvider.currentUser!.id,
         );
       }
-    } else {
-      final success = await productProvider.createProduct(
-        title: _titleController.text.trim(),
-        description: _descriptionController.text.trim(),
-        price: double.parse(_priceController.text.trim()),
-        category: _selectedCategory,
-        imageUrls: imageUrls,
-        sellerId: authProvider.currentUser!.id,
-      );
 
-      if (success && mounted) {
-        Navigator.of(context).pop();
+      if (mounted) {
+        ScaffoldMessenger.of(context).hideCurrentSnackBar();
+        
+        if (success) {
+          Navigator.of(context).pop();
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(_isEditMode ? 'Producto actualizado exitosamente' : 'Producto creado exitosamente'),
+              backgroundColor: Colors.green,
+            ),
+          );
+        } else {
+          // Mostrar error del provider
+          final errorMsg = productProvider.errorMessage ?? 'Error desconocido al guardar el producto';
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Error: $errorMsg'),
+              backgroundColor: Colors.red,
+              duration: const Duration(seconds: 5),
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).hideCurrentSnackBar();
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Producto creado')),
+          SnackBar(
+            content: Text('Error inesperado: ${e.toString()}'),
+            backgroundColor: Colors.red,
+            duration: const Duration(seconds: 5),
+          ),
         );
       }
     }

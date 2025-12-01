@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../models/user_model.dart';
 import '../config/supabase_config.dart';
@@ -95,13 +96,17 @@ class AuthService {
   }) async {
     try {
       final response = await _supabase.auth.signInWithPassword(
-        email: email,
+        email: email.trim(),
         password: password,
       );
 
       if (response.user == null) {
         throw Exception('Credenciales inválidas');
       }
+
+      // Debug: Verificar estado del usuario
+      debugPrint('Usuario autenticado: ${response.user!.email}');
+      debugPrint('Email confirmado: ${response.user!.emailConfirmedAt}');
 
       // Intentar obtener perfil del usuario
       try {
@@ -136,12 +141,27 @@ class AuthService {
       String errorMessage = 'Error al iniciar sesión';
       
       if (e.message.contains('Invalid login credentials') || 
-          e.message.contains('Invalid credentials')) {
-        errorMessage = 'Email o contraseña incorrectos';
-      } else if (e.message.contains('Email not confirmed')) {
-        errorMessage = 'Por favor confirma tu email antes de iniciar sesión';
-      } else if (e.message.contains('User not found')) {
-        errorMessage = 'Usuario no encontrado. Por favor regístrate primero';
+          e.message.contains('Invalid credentials') ||
+          e.message.contains('400') ||
+          e.message.contains('Bad Request')) {
+        errorMessage = 'Email o contraseña incorrectos. Verifica tus credenciales.';
+      } else if (e.message.contains('Email not confirmed') ||
+                 e.message.contains('email_not_confirmed')) {
+        errorMessage = 'Por favor confirma tu email antes de iniciar sesión. Revisa tu bandeja de entrada.';
+      } else if (e.message.contains('User not found') ||
+                 e.message.contains('user_not_found')) {
+        errorMessage = 'Usuario no encontrado. Por favor regístrate primero.';
+      } else {
+        errorMessage = 'Error: ${e.message}';
+      }
+      
+      throw Exception(errorMessage);
+    } on PostgrestException catch (e) {
+      // Manejar errores de Postgrest (incluye errores 400)
+      String errorMessage = 'Error al iniciar sesión';
+      
+      if (e.code == '400' || e.message.contains('400') || e.message.contains('Bad Request')) {
+        errorMessage = 'Email o contraseña incorrectos. Verifica tus credenciales.';
       } else {
         errorMessage = 'Error: ${e.message}';
       }
@@ -150,7 +170,9 @@ class AuthService {
     } catch (e) {
       // Manejar otros errores
       final errorString = e.toString();
-      if (errorString.contains('400') || errorString.contains('Bad Request')) {
+      if (errorString.contains('400') || 
+          errorString.contains('Bad Request') ||
+          errorString.contains('Invalid login')) {
         throw Exception('Email o contraseña incorrectos. Verifica tus credenciales.');
       }
       throw Exception('Error al iniciar sesión: ${e.toString()}');

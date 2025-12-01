@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 class ProductModel {
   final String id;
   final String title;
@@ -11,6 +13,34 @@ class ProductModel {
   final DateTime createdAt;
   final DateTime? updatedAt;
   final bool isActive;
+
+  // Helper para parsear imágenes que pueden venir como List o String (JSON)
+  static List<String> _parseImages(dynamic imagesData) {
+    if (imagesData == null) return [];
+    
+    // Si ya es una List, convertirla directamente
+    if (imagesData is List) {
+      return imagesData.map((e) => e?.toString() ?? '').where((e) => e.isNotEmpty).toList();
+    }
+    
+    // Si es un String, intentar parsearlo como JSON
+    if (imagesData is String) {
+      try {
+        // Si el string parece ser un JSON array, parsearlo
+        if (imagesData.trim().startsWith('[')) {
+          final parsed = jsonDecode(imagesData) as List;
+          return parsed.map((e) => e?.toString() ?? '').where((e) => e.isNotEmpty).toList();
+        }
+        // Si es un string simple, devolverlo como lista con un elemento
+        return imagesData.isNotEmpty ? [imagesData] : [];
+      } catch (e) {
+        // Si falla el parseo, devolver el string como lista con un elemento
+        return imagesData.isNotEmpty ? [imagesData] : [];
+      }
+    }
+    
+    return [];
+  }
 
   ProductModel({
     required this.id,
@@ -29,20 +59,20 @@ class ProductModel {
 
   factory ProductModel.fromJson(Map<String, dynamic> json) {
     return ProductModel(
-      id: json['id'] as String,
-      title: json['title'] as String,
-      description: json['description'] as String,
-      price: (json['price'] as num).toDouble(),
-      category: json['category'] as String,
-      images: json['images'] != null
-          ? List<String>.from(json['images'] as List)
-          : [],
-      sellerId: json['seller_id'] as String,
-      sellerName: json['seller_name'] as String?,
-      sellerWhatsapp: json['seller_whatsapp'] as String?,
-      createdAt: DateTime.parse(json['created_at'] as String),
+      id: json['id']?.toString() ?? '',
+      title: json['title']?.toString() ?? '',
+      description: json['description']?.toString() ?? '',
+      price: (json['price'] as num?)?.toDouble() ?? 0.0,
+      category: json['category']?.toString() ?? '',
+      images: _parseImages(json['images']),
+      sellerId: json['seller_id']?.toString() ?? '',
+      sellerName: json['seller_name']?.toString(),
+      sellerWhatsapp: json['seller_whatsapp']?.toString(),
+      createdAt: json['created_at'] != null
+          ? DateTime.parse(json['created_at'].toString())
+          : DateTime.now(),
       updatedAt: json['updated_at'] != null
-          ? DateTime.parse(json['updated_at'] as String)
+          ? DateTime.parse(json['updated_at'].toString())
           : null,
       isActive: json['is_active'] as bool? ?? true,
     );

@@ -181,3 +181,4 @@ VALUES (
 -- 4. Si un usuario no existe, el INSERT fallará silenciosamente
 
 
+

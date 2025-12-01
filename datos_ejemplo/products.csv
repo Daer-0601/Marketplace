@@ -2,3 +2,4 @@ title,description,price,category,images,seller_id,is_active
 "Macramé Decorativo","Macramé hecho a mano con hilo de algodón. Medidas: 50x80 cm.",450.00,"Artesanías","",UUID_VENDEDOR_1,true
 "Collar de Plata 925","Collar artesanal de plata 925 con diseño único.",850.00,"Joyería","",UUID_VENDEDOR_1,true
 "Chal Artesanal","Chal tejido a mano con lana 100% natural.",320.00,"Textiles","",UUID_VENDEDOR_2,true
+

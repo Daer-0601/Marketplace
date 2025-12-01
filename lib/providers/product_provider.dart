@@ -182,7 +182,18 @@ class ProductProvider with ChangeNotifier {
     }
   }
 
-  // Subir imagen a Supabase Storage
+  // Subir imagen a Supabase Storage (acepta XFile para web y móvil)
+  Future<String> uploadImageFromXFile(dynamic imageFile, String productId) async {
+    try {
+      return await _productService.uploadImageFromXFile(imageFile, productId);
+    } catch (e) {
+      _errorMessage = e.toString();
+      notifyListeners();
+      rethrow;
+    }
+  }
+
+  // Método legacy para compatibilidad
   Future<String> uploadImage(String imagePath, String productId) async {
     try {
       return await _productService.uploadImage(imagePath, productId);

@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:http/http.dart' as http;
 import '../models/product_model.dart';
 import '../config/supabase_config.dart';
 
@@ -22,17 +23,17 @@ class ProductService {
           .from('profiles')
           .select('full_name, whatsapp')
           .eq('id', sellerId)
-          .single();
+          .maybeSingle();
 
       final productData = {
         'title': title,
         'description': description,
         'price': price,
         'category': category,
-        'images': imageUrls,
+        'images': imageUrls.isNotEmpty ? imageUrls : [],
         'seller_id': sellerId,
-        'seller_name': sellerData['full_name'],
-        'seller_whatsapp': sellerData['whatsapp'],
+        'seller_name': sellerData?['full_name']?.toString() ?? '',
+        'seller_whatsapp': sellerData?['whatsapp']?.toString() ?? '',
         'is_active': true,
       };
 
@@ -182,30 +183,77 @@ class ProductService {
   }
 
   // Subir imagen a Supabase Storage
-  Future<String> uploadImage(String imagePath, String productId) async {
+  // Ahora acepta XFile directamente para mejor compatibilidad web/móvil
+  Future<String> uploadImageFromXFile(dynamic imageFile, String productId) async {
     try {
       final fileName = '${DateTime.now().millisecondsSinceEpoch}.jpg';
       final filePath = 'products/$productId/$fileName';
       
-      if (kIsWeb) {
-        // En web, el imagePath es una URL blob, necesitamos leer los bytes
-        // Por ahora, en web no podemos subir directamente desde blob URL
-        // Necesitamos que el usuario suba la imagen de otra manera
-        throw Exception('La subida de imágenes desde web requiere configuración adicional. Por favor, usa la app móvil para subir imágenes.');
-      } else {
-        // Es móvil - usar File
-        final file = File(imagePath);
-        await _supabase.storage.from('product-images').upload(
-              filePath,
-              file,
-            );
-      }
+      // Leer los bytes del archivo (funciona tanto en web como móvil)
+      final bytes = await imageFile.readAsBytes();
+      
+      // Subir los bytes a Supabase Storage
+      await _supabase.storage.from('product-images').uploadBinary(
+            filePath,
+            bytes,
+            fileOptions: const FileOptions(
+              contentType: 'image/jpeg',
+            ),
+          );
 
       final imageUrl = _supabase.storage
           .from('product-images')
           .getPublicUrl(filePath);
 
       return imageUrl;
+    } catch (e) {
+      throw Exception('Error al subir imagen: ${e.toString()}');
+    }
+  }
+
+  // Método legacy para compatibilidad
+  Future<String> uploadImage(String imagePath, String productId) async {
+    try {
+      if (kIsWeb) {
+        // En web, necesitamos leer desde la URL blob
+        final response = await http.get(Uri.parse(imagePath));
+        if (response.statusCode != 200) {
+          throw Exception('Error al leer la imagen desde la URL');
+        }
+        
+        final fileName = '${DateTime.now().millisecondsSinceEpoch}.jpg';
+        final filePath = 'products/$productId/$fileName';
+        
+        await _supabase.storage.from('product-images').uploadBinary(
+              filePath,
+              response.bodyBytes,
+              fileOptions: const FileOptions(
+                contentType: 'image/jpeg',
+              ),
+            );
+
+        final imageUrl = _supabase.storage
+            .from('product-images')
+            .getPublicUrl(filePath);
+
+        return imageUrl;
+      } else {
+        // Es móvil - usar File
+        final file = File(imagePath);
+        final fileName = '${DateTime.now().millisecondsSinceEpoch}.jpg';
+        final filePath = 'products/$productId/$fileName';
+        
+        await _supabase.storage.from('product-images').upload(
+              filePath,
+              file,
+            );
+
+        final imageUrl = _supabase.storage
+            .from('product-images')
+            .getPublicUrl(filePath);
+
+        return imageUrl;
+      }
     } catch (e) {
       throw Exception('Error al subir imagen: ${e.toString()}');
     }
