@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "buildCommand": "bash -c 'set -e && FLUTTER_VERSION=3.24.3 && echo \"📥 Descargando Flutter $FLUTTER_VERSION...\" && curl -L https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_${FLUTTER_VERSION}-stable.tar.xz | tar xJ && export PATH=\"$PATH:$(pwd)/flutter/bin\" && echo \"✅ Flutter instalado\" && flutter config --enable-web --no-analytics && echo \"🌐 Flutter Web habilitado\" && flutter pub get && echo \"📦 Dependencias instaladas\" && flutter build web --release --web-renderer html --dart-define=SUPABASE_URL=$SUPABASE_URL --dart-define=SUPABASE_KEY=$SUPABASE_KEY && echo \"✅ Build completado\"'",
+  "buildCommand": "chmod +x install-flutter.sh && ./install-flutter.sh",
   "outputDirectory": "build/web",
   "installCommand": "echo 'Flutter se instalará durante el build'",
   "framework": null,

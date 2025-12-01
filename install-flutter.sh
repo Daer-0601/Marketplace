@@ -19,11 +19,17 @@ flutter --version
 
 # Habilitar Flutter Web
 echo "🌐 Habilitando Flutter Web..."
-flutter config --enable-web
+flutter config --enable-web --no-analytics
 
-# Aceptar licencias
-echo "📝 Aceptando licencias de Flutter..."
-yes | flutter doctor --android-licenses || true
+# Instalar dependencias
+echo "📦 Instalando dependencias..."
+flutter pub get
 
-echo "✅ Flutter instalado correctamente!"
+# Build
+echo "🔨 Construyendo aplicación..."
+flutter build web --release --web-renderer html \
+  --dart-define=SUPABASE_URL="${SUPABASE_URL}" \
+  --dart-define=SUPABASE_KEY="${SUPABASE_KEY}"
+
+echo "✅ Build completado!"
 
