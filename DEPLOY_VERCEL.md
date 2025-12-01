@@ -110,11 +110,14 @@ Después del despliegue:
 
 ### Error: Flutter no encontrado
 
-Si Vercel no encuentra Flutter, agrega esto al `buildCommand` en `vercel.json`:
+Si Vercel muestra "flutter: command not found", el script `install-flutter.sh` se ejecutará automáticamente durante el build para instalar Flutter.
 
-```json
-"buildCommand": "export PATH=\"$PATH:/usr/local/flutter/bin\" && flutter build web --release --web-renderer html"
-```
+**Nota**: El primer build puede tardar más tiempo (10-15 minutos) porque necesita:
+1. Descargar Flutter (~1GB)
+2. Instalar dependencias
+3. Compilar la aplicación
+
+Los builds subsecuentes serán más rápidos (3-5 minutos) porque Flutter ya estará en caché.
 
 ### Error: Variables de entorno no funcionan
 

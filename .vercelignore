@@ -17,4 +17,4 @@ build/
 .packages
 pubspec.lock
 analysis_options.yaml
-
+flutter/
