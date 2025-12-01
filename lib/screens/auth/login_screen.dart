@@ -64,14 +64,15 @@ class _LoginScreenState extends State<LoginScreen> {
       body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
             colors: [
               const Color(0xFF2E7D32),
               const Color(0xFF388E3C),
+              const Color(0xFF4CAF50),
               Colors.white,
             ],
-            stops: const [0.0, 0.35, 0.35],
+            stops: const [0.0, 0.25, 0.4, 0.4],
           ),
         ),
         child: SafeArea(
@@ -133,47 +134,27 @@ class _LoginScreenState extends State<LoginScreen> {
                       },
                       child: Column(
                         children: [
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 8),
-                            child: const Text(
-                              'Marketplace Artesanal',
-                              style: TextStyle(
-                                fontSize: 34,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                                letterSpacing: -0.5,
-                                height: 1.2,
-                                shadows: [
-                                  Shadow(
-                                    color: Colors.black26,
-                                    offset: Offset(0, 2),
-                                    blurRadius: 4,
-                                  ),
-                                ],
-                              ),
-                              textAlign: TextAlign.center,
+                          const Text(
+                            'Marketplace Artesanal',
+                            style: TextStyle(
+                              fontSize: 34,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                              letterSpacing: -0.5,
+                              height: 1.2,
                             ),
+                            textAlign: TextAlign.center,
                           ),
                           const SizedBox(height: 12),
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 8),
-                            child: Text(
-                              'Inicia sesión para continuar',
-                              style: TextStyle(
-                                fontSize: 16,
-                                color: Colors.white,
-                                fontWeight: FontWeight.w400,
-                                letterSpacing: 0.2,
-                                shadows: [
-                                  Shadow(
-                                    color: Colors.black26,
-                                    offset: Offset(0, 1),
-                                    blurRadius: 3,
-                                  ),
-                                ],
-                              ),
-                              textAlign: TextAlign.center,
+                          Text(
+                            'Inicia sesión para continuar',
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Colors.white.withOpacity(0.9),
+                              fontWeight: FontWeight.w400,
+                              letterSpacing: 0.2,
                             ),
+                            textAlign: TextAlign.center,
                           ),
                         ],
                       ),
@@ -193,75 +174,43 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                         );
                       },
-                      child: Container(
-                        padding: const EdgeInsets.all(24),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(24),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.1),
-                              blurRadius: 20,
-                              offset: const Offset(0, 10),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          // Campo Email
+                          Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(16),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.05),
+                                  blurRadius: 10,
+                                  offset: const Offset(0, 4),
+                                ),
+                              ],
                             ),
-                          ],
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            // Campo Email
-                            TextFormField(
+                            child: TextFormField(
                               controller: _emailController,
                               keyboardType: TextInputType.emailAddress,
                               style: const TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w500,
-                                color: Color(0xFF1B5E20),
                               ),
                               decoration: InputDecoration(
                                 labelText: 'Email',
-                                labelStyle: TextStyle(
-                                  color: Colors.grey[600],
-                                  fontWeight: FontWeight.w500,
-                                ),
-                                prefixIcon: Icon(
+                                prefixIcon: const Icon(
                                   Icons.email_outlined,
-                                  color: Colors.grey[600],
+                                  color: Color(0xFF2E7D32),
                                 ),
                                 filled: true,
-                                fillColor: const Color(0xFFF5F5F5),
+                                fillColor: Colors.white,
                                 border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(14),
+                                  borderRadius: BorderRadius.circular(16),
                                   borderSide: BorderSide.none,
-                                ),
-                                enabledBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(14),
-                                  borderSide: BorderSide.none,
-                                ),
-                                focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(14),
-                                  borderSide: const BorderSide(
-                                    color: Color(0xFF2E7D32),
-                                    width: 2,
-                                  ),
-                                ),
-                                errorBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(14),
-                                  borderSide: const BorderSide(
-                                    color: Color(0xFFD32F2F),
-                                    width: 1.5,
-                                  ),
-                                ),
-                                focusedErrorBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(14),
-                                  borderSide: const BorderSide(
-                                    color: Color(0xFFD32F2F),
-                                    width: 2,
-                                  ),
                                 ),
                                 contentPadding: const EdgeInsets.symmetric(
                                   horizontal: 20,
-                                  vertical: 18,
+                                  vertical: 20,
                                 ),
                               ),
                               validator: (value) {
@@ -274,32 +223,39 @@ class _LoginScreenState extends State<LoginScreen> {
                                 return null;
                               },
                             ),
-                            const SizedBox(height: 20),
-                            // Campo Contraseña
-                            TextFormField(
+                          ),
+                          const SizedBox(height: 20),
+                          // Campo Contraseña
+                          Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(16),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.05),
+                                  blurRadius: 10,
+                                  offset: const Offset(0, 4),
+                                ),
+                              ],
+                            ),
+                            child: TextFormField(
                               controller: _passwordController,
                               obscureText: _obscurePassword,
                               style: const TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w500,
-                                color: Color(0xFF1B5E20),
                               ),
                               decoration: InputDecoration(
                                 labelText: 'Contraseña',
-                                labelStyle: TextStyle(
-                                  color: Colors.grey[600],
-                                  fontWeight: FontWeight.w500,
-                                ),
-                                prefixIcon: Icon(
+                                prefixIcon: const Icon(
                                   Icons.lock_outlined,
-                                  color: Colors.grey[600],
+                                  color: Color(0xFF2E7D32),
                                 ),
                                 suffixIcon: IconButton(
                                   icon: Icon(
                                     _obscurePassword
                                         ? Icons.visibility_outlined
                                         : Icons.visibility_off_outlined,
-                                    color: Colors.grey[600],
+                                    color: const Color(0xFF2E7D32),
                                   ),
                                   onPressed: () {
                                     setState(() {
@@ -308,39 +264,14 @@ class _LoginScreenState extends State<LoginScreen> {
                                   },
                                 ),
                                 filled: true,
-                                fillColor: const Color(0xFFF5F5F5),
+                                fillColor: Colors.white,
                                 border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(14),
+                                  borderRadius: BorderRadius.circular(16),
                                   borderSide: BorderSide.none,
-                                ),
-                                enabledBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(14),
-                                  borderSide: BorderSide.none,
-                                ),
-                                focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(14),
-                                  borderSide: const BorderSide(
-                                    color: Color(0xFF2E7D32),
-                                    width: 2,
-                                  ),
-                                ),
-                                errorBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(14),
-                                  borderSide: const BorderSide(
-                                    color: Color(0xFFD32F2F),
-                                    width: 1.5,
-                                  ),
-                                ),
-                                focusedErrorBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(14),
-                                  borderSide: const BorderSide(
-                                    color: Color(0xFFD32F2F),
-                                    width: 2,
-                                  ),
                                 ),
                                 contentPadding: const EdgeInsets.symmetric(
                                   horizontal: 20,
-                                  vertical: 18,
+                                  vertical: 20,
                                 ),
                               ),
                               validator: (value) {
@@ -353,17 +284,29 @@ class _LoginScreenState extends State<LoginScreen> {
                                 return null;
                               },
                             ),
-                            const SizedBox(height: 32),
-                            // Botón de inicio de sesión
-                            ElevatedButton(
+                          ),
+                          const SizedBox(height: 32),
+                          // Botón de inicio de sesión
+                          Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(16),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: const Color(0xFF2E7D32).withOpacity(0.3),
+                                  blurRadius: 20,
+                                  offset: const Offset(0, 8),
+                                ),
+                              ],
+                            ),
+                            child: ElevatedButton(
                               onPressed: authProvider.isLoading ? null : _handleLogin,
                               style: ElevatedButton.styleFrom(
-                                padding: const EdgeInsets.symmetric(vertical: 18),
+                                padding: const EdgeInsets.symmetric(vertical: 20),
                                 backgroundColor: const Color(0xFF2E7D32),
                                 foregroundColor: Colors.white,
                                 elevation: 0,
                                 shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(14),
+                                  borderRadius: BorderRadius.circular(16),
                                 ),
                               ),
                               child: authProvider.isLoading
@@ -384,49 +327,50 @@ class _LoginScreenState extends State<LoginScreen> {
                                       ),
                                     ),
                             ),
-                            const SizedBox(height: 20),
-                            // Botón de registro
-                            TextButton(
-                              onPressed: () {
-                                Navigator.of(context).push(
-                                  PageRouteBuilder(
-                                    pageBuilder: (context, animation, secondaryAnimation) =>
-                                        const RegisterScreen(),
-                                    transitionsBuilder: (context, animation, secondaryAnimation, child) {
-                                      return FadeTransition(
-                                        opacity: animation,
-                                        child: child,
-                                      );
-                                    },
-                                  ),
-                                );
-                              },
-                              style: TextButton.styleFrom(
-                                padding: const EdgeInsets.symmetric(vertical: 14),
-                              ),
-                              child: RichText(
-                                textAlign: TextAlign.center,
-                                text: TextSpan(
-                                  style: TextStyle(
-                                    fontSize: 15,
-                                    color: Colors.grey[700],
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                  children: [
-                                    const TextSpan(text: '¿No tienes cuenta? '),
-                                    TextSpan(
-                                      text: 'Regístrate',
-                                      style: TextStyle(
-                                        color: const Color(0xFF2E7D32),
-                                        fontWeight: FontWeight.w700,
-                                      ),
-                                    ),
-                                  ],
+                          ),
+                          const SizedBox(height: 24),
+                          // Botón de registro
+                          TextButton(
+                            onPressed: () {
+                              Navigator.of(context).push(
+                                PageRouteBuilder(
+                                  pageBuilder: (context, animation, secondaryAnimation) =>
+                                      const RegisterScreen(),
+                                  transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                                    return FadeTransition(
+                                      opacity: animation,
+                                      child: child,
+                                    );
+                                  },
                                 ),
+                              );
+                            },
+                            style: TextButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(vertical: 16),
+                            ),
+                            child: RichText(
+                              textAlign: TextAlign.center,
+                              text: TextSpan(
+                                style: TextStyle(
+                                  fontSize: 15,
+                                  color: Colors.white.withOpacity(0.9),
+                                  fontWeight: FontWeight.w500,
+                                ),
+                                children: const [
+                                  TextSpan(text: '¿No tienes cuenta? '),
+                                  TextSpan(
+                                    text: 'Regístrate',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w700,
+                                      decoration: TextDecoration.underline,
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
                     ),
                   ],

@@ -3,8 +3,11 @@ set -e
 
 echo "🚀 Instalando Flutter para Vercel..."
 
-# Descargar Flutter
-FLUTTER_VERSION="3.24.3"
+# Configurar git para evitar problemas de permisos
+git config --global --add safe.directory '*'
+
+# Descargar Flutter (versión más reciente con Dart 3.10+)
+FLUTTER_VERSION="3.27.1"
 FLUTTER_URL="https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_${FLUTTER_VERSION}-stable.tar.xz"
 
 echo "📥 Descargando Flutter ${FLUTTER_VERSION}..."
@@ -15,6 +18,9 @@ fi
 
 # Agregar Flutter al PATH
 export PATH="$PATH:$(pwd)/flutter/bin"
+
+# Configurar git safe directory para Flutter
+git config --global --add safe.directory "$(pwd)/flutter"
 
 # Verificar instalación
 echo "✅ Verificando instalación de Flutter..."
