@@ -18,10 +18,15 @@ class SupabaseConfig {
   // ═══════════════════════════════════════════════════════════════
   
   // URL de tu proyecto Supabase
-  static const String supabaseUrl = 'https://riifvjrfcynrtbkfeoyq.supabase.co';
+  // Se puede configurar desde variable de entorno para producción (Vercel)
+  static const String supabaseUrl = String.fromEnvironment(
+    'SUPABASE_URL',
+    defaultValue: 'https://riifvjrfcynrtbkfeoyq.supabase.co',
+  );
   
   // Clave anon - Se obtiene de variable de entorno o valor por defecto
   // Si usas --dart-define, esta variable se reemplazará automáticamente
+  // Para Vercel: Configura SUPABASE_KEY en las variables de entorno
   static const String supabaseAnonKey = String.fromEnvironment(
     'SUPABASE_KEY',
     defaultValue: 'sb_publishable_dZ0Bjel-A_5rGmeNwJNc-A_8Qqx7loQ', // Clave configurada

@@ -1,0 +1,20 @@
+# Archivos y carpetas a ignorar en Vercel
+android/
+ios/
+linux/
+macos/
+windows/
+test/
+.git/
+.gitignore
+*.md
+*.bat
+*.sh
+.vscode/
+.idea/
+build/
+.dart_tool/
+.packages
+pubspec.lock
+analysis_options.yaml
+
