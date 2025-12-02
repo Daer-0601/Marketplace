@@ -70,11 +70,12 @@ RUN echo "=== Build Configuration ===" && \
 
 # Build con las variables
 # Nota: El código ya tiene valores por defecto, así que si las variables fallan, usará los defaults
-RUN flutter build web --release --web-renderer html \
+# Nota: --web-renderer fue removido en Flutter 3.38+, ya no es necesario
+RUN flutter build web --release \
     --dart-define=SUPABASE_URL="${SUPABASE_URL}" \
     --dart-define=SUPABASE_KEY="${SUPABASE_KEY}" || \
     (echo "=== BUILD FAILED - Trying without variables ===" && \
-     flutter build web --release --web-renderer html)
+     flutter build web --release)
 
 # Exponer puerto
 EXPOSE 8080
