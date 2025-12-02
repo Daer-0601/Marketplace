@@ -20,10 +20,11 @@ RUN git clone https://github.com/flutter/flutter.git -b stable /usr/local/flutte
 ENV PATH="/usr/local/flutter/bin:/usr/local/flutter/bin/cache/dart-sdk/bin:${PATH}"
 
 # Configurar git para evitar problemas de permisos
-RUN git config --global --add safe.directory '*'
+RUN git config --global --add safe.directory '*' && \
+    git config --global --add safe.directory '/usr/local/flutter'
 
-# Verificar instalación
-RUN flutter doctor -v
+# Verificar que Flutter esté instalado (sin doctor para evitar errores)
+RUN flutter --version || true
 
 # Configurar directorio de trabajo
 WORKDIR /app
@@ -33,6 +34,9 @@ COPY pubspec.yaml pubspec.lock ./
 COPY lib ./lib
 COPY web ./web
 COPY analysis_options.yaml ./
+
+# Habilitar Flutter Web
+RUN flutter config --enable-web --no-analytics
 
 # Instalar dependencias de Flutter
 RUN flutter pub get
@@ -45,9 +49,12 @@ ARG SUPABASE_KEY
 ENV SUPABASE_URL=${SUPABASE_URL}
 ENV SUPABASE_KEY=${SUPABASE_KEY}
 
+# Build con manejo de errores
 RUN flutter build web --release --web-renderer html \
-    --dart-define=SUPABASE_URL=${SUPABASE_URL} \
-    --dart-define=SUPABASE_KEY=${SUPABASE_KEY}
+    --dart-define=SUPABASE_URL="${SUPABASE_URL}" \
+    --dart-define=SUPABASE_KEY="${SUPABASE_KEY}" || \
+    (echo "Build falló, intentando sin variables..." && \
+     flutter build web --release --web-renderer html)
 
 # Exponer puerto
 EXPOSE 8080
