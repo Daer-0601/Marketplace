@@ -65,7 +65,7 @@ ARG SUPABASE_KEY=sb_publishable_dZ0Bjel-A_5rGmeNwJNc-A_8Qqx7loQ
 # Verificar que las variables estén disponibles
 RUN echo "=== Build Configuration ===" && \
     echo "SUPABASE_URL: ${SUPABASE_URL}" && \
-    echo "SUPABASE_KEY: ${SUPABASE_KEY:0:30}..." && \
+    echo "SUPABASE_KEY: $(echo ${SUPABASE_KEY} | cut -c1-30)..." && \
     echo "========================="
 
 # Build con las variables
