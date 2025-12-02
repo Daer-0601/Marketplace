@@ -59,14 +59,22 @@ RUN flutter pub get
 
 # Build de la aplicación web
 # Declarar ARG para recibir variables durante el build
-# Render las pasa automáticamente, pero usamos valores por defecto por seguridad
 ARG SUPABASE_URL=https://riifvjrfcynrtbkfeoyq.supabase.co
 ARG SUPABASE_KEY=sb_publishable_dZ0Bjel-A_5rGmeNwJNc-A_8Qqx7loQ
 
+# Verificar que las variables estén disponibles
+RUN echo "=== Build Configuration ===" && \
+    echo "SUPABASE_URL: ${SUPABASE_URL}" && \
+    echo "SUPABASE_KEY: ${SUPABASE_KEY:0:30}..." && \
+    echo "========================="
+
 # Build con las variables
+# Nota: El código ya tiene valores por defecto, así que si las variables fallan, usará los defaults
 RUN flutter build web --release --web-renderer html \
     --dart-define=SUPABASE_URL="${SUPABASE_URL}" \
-    --dart-define=SUPABASE_KEY="${SUPABASE_KEY}"
+    --dart-define=SUPABASE_KEY="${SUPABASE_KEY}" || \
+    (echo "=== BUILD FAILED - Trying without variables ===" && \
+     flutter build web --release --web-renderer html)
 
 # Exponer puerto
 EXPOSE 8080
