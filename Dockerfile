@@ -58,13 +58,12 @@ RUN flutter config --enable-web --no-analytics
 RUN flutter pub get
 
 # Build de la aplicación web
-# Las variables de entorno se pasan desde Render
-ARG SUPABASE_URL
-ARG SUPABASE_KEY
-ENV SUPABASE_URL=${SUPABASE_URL}
-ENV SUPABASE_KEY=${SUPABASE_KEY}
+# Declarar ARG para recibir variables durante el build
+# Render las pasa automáticamente, pero usamos valores por defecto por seguridad
+ARG SUPABASE_URL=https://riifvjrfcynrtbkfeoyq.supabase.co
+ARG SUPABASE_KEY=sb_publishable_dZ0Bjel-A_5rGmeNwJNc-A_8Qqx7loQ
 
-# Build
+# Build con las variables
 RUN flutter build web --release --web-renderer html \
     --dart-define=SUPABASE_URL="${SUPABASE_URL}" \
     --dart-define=SUPABASE_KEY="${SUPABASE_KEY}"
